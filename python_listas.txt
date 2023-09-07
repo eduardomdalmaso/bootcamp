@@ -1,0 +1,7 @@
+//PYTHON LISTAS
+
+// Lista é mutável e armazena de forma sequêncial qualquer objeto python
+
+
+
+
