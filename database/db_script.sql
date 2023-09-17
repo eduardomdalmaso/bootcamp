@@ -62,6 +62,63 @@ DROP TABLE usuarios;
 ALTER TABLE usuarios_nova RENAME usuarios;
 ALTER TABLE usuarios MODIFY COLUMN endereco VARCHAR(150);
 
+ALTER TABLE usuarios
+MODIFY COLUMN id INT AUTO_INCREMENT,
+ADD PRIMARY KEY (id);
+
+ALTER TABLE destinos
+MODIFY COLUMN id INT AUTO_INCREMENT,
+ADD PRIMARY KEY (id);
+
+ALTER TABLE reservas
+ADD CONSTRAINT fk_reservas_usuarios
+FOREIGN KEY(id_usuario) REFERENCES usuarios (id);
+
+ALTER TABLE reservas
+ADD CONSTRAINT fk_reservas_destinos
+FOREIGN KEY(id_destinos) REFERENCES destinos (id);
+
+ALTER TABLE reservas
+ADD CONSTRAINT fk_usuarios
+FOREIGN KEY (id_usuario) REFERENCES usuarios (id)
+ON DELETE CASCADE;
+
+DELETE FROM usuarios WHERE id = 1;
+
+ALTER TABLE reservas DROP CONSTRAINT fk_reservas_usuarios
+
+DELETE FROM usuarios WHERE id = 1;
+
+ALTER TABLE usuarios
+ADD rua VARCHAR(100),
+ADD numero VARCHAR(10),
+ADD cidade VARCHAR(50),
+ADD estado VARCHAR(20);
+
+UPDATE usuarios
+SET rua = SUBSTRING_INDEX(SUBSTRING_INDEX(endereco, ',',1),',',-1),
+    numero = SUBSTRING_INDEX(SUBSTRING_INDEX(endereco, ',',2),',',-1),
+    cidade = SUBSTRING_INDEX(SUBSTRING_INDEX(endereco, ',',3),',',-1),
+    estado = SUBSTRING_INDEX(endereco, ',',-1);
+
+ALTER TABLE usuarios
+DROP COLUMN endereco;
+
+INNER JOIN reservas ON usuarios.id = reservas.id_usuario,
+INNER JOIN destinos ON reservas.id_destino = destinos.id;
+
+INSERT INTO usuarios (nome, email, data_nascimento, rua, numero, cidade, estado)
+VALUES ("Sem reservas","dio@teste.com","1992-05-10","Rua Teste","12","Cidade teste","São Paulo");
+
+LEFT JOIN reservas ON usuarios.id = reservas.id_usuario;
+
+INSERT INTO destinos (nome,descricao,)
+VALUES ("Shopping","Compras");
+
+RIGHT JOIN destinos ON reservas.id = destinos.id;
+
+SELECT * FROM destinos
+WHERE id NOT IN (SELECT id_destino FROM reserva);
 
 
 
